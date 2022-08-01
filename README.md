@@ -6,8 +6,8 @@ DApp to manage, display and share an online album collection linked to a Metamas
 
 The App logic consists of two smart contracts:
 
-**NFT Contract** - This contract allows users to mint albums as ERC-721 tokens.
-**Collection Contract** - This contract allows users to add, transfer or remove albums from their collection.
+- **NFT Contract** - This contract allows users to mint albums as ERC-721 tokens.
+- **Collection Contract** - This contract allows users to add, transfer or remove albums from their collection.
 
 ### Prerequisites
 
@@ -56,6 +56,7 @@ You can verify the contracts on Polygonscan by running the following command, re
 
 ````sh
 npx hardhat verify --network mumbai <deployed-contract-address>
+```
 
 Finally, you can now test out the app by running the command:
 
@@ -65,10 +66,10 @@ npm run dev
 
 ### Next Steps
 
-- Add the transfer feature to another wallet
+- Add the transfer to another wallet feature
 - Display activity feed of the user
 
 ### Updates
 
-- **Aug 01, 2022**: Created front end page with creation, removal and displya features
+- **Aug 01, 2022**: Created front end page with creation, removal and display features
 - **Jul 27, 2022**: Created both smart contracts, deployed and verified on Polygon Mumbai network
