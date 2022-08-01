@@ -1,6 +1,6 @@
 # Decentralized Album Collection
 
-![](screenshot.jpg)
+![](screenshot.JPG)
 
 DApp to manage, display and share an online album collection linked to a Metamask wallet, deployed on Polygon.
 
