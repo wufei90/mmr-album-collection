@@ -59,7 +59,7 @@ export default function AddAlbum(props) {
 
     try {
       // First, get url of metadata on IPFS
-     /*const metadataURL = await uploadMetadataToIPFS();
+      const metadataURL = await uploadMetadataToIPFS();
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
@@ -76,16 +76,6 @@ export default function AddAlbum(props) {
       let tokenId = value.toNumber();
       contract = new ethers.Contract(albumcollectionaddress, Collection.abi, signer);
       transaction = await contract.createAlbum(tokenId);
-      await transaction.wait();*/
-
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      updateMessage("Please wait.. uploading (upto 5 mins)")
-
-      // Next, create the NFT
-      let tokenId = 3;
-      let contract = new ethers.Contract(albumcollectionaddress, Collection.abi, signer);
-      let transaction = await contract.createAlbum(tokenId);
       await transaction.wait();
 
       alert("Successfully listed your NFT!");
@@ -97,7 +87,6 @@ export default function AddAlbum(props) {
       alert("Error when trying to add the album. Please try again");
       console.log("Error when minting: ", error);
     }
-
   }
 
   if(!currentAccount){

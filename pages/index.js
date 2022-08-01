@@ -32,6 +32,8 @@ const getCollectorLvl = (count) => {
 export default function Home(props) {
   const {currentAccount} = props;
   const [albums, setAlbums] = useState([]);
+  const [artistCount, setArtistCount] = useState(0);
+  const [topArtist, setTopArtist] = useState();
   const [loadingState, setLoadingState] = useState("not-loaded");
 
   useEffect(() => {
@@ -61,6 +63,7 @@ export default function Home(props) {
             const meta = await axios.get(tokenUri);
             let item = {
               tokenId: i.tokenId.toNumber(),
+              albumId: i.albumId.toNumber(),
               owner: i.owner,
               name: meta.data.name,
               artist: meta.data.artist,
@@ -69,8 +72,8 @@ export default function Home(props) {
             return item;
           })
         );
-
         setAlbums(albums);
+        setArtistData(albums);
         setLoadingState("loaded");
       } catch (error) {
         if (error.code === 4001) {
@@ -81,6 +84,54 @@ export default function Home(props) {
           console.error(error);
         }
       } 
+    }
+  }
+
+  function setArtistData(albums) {
+    const counts = {};
+    let top = "-";
+    if(albums.length !== 0) {
+      for(let i = 0; i < albums.length; i++){ 
+        if(Object.hasOwn(counts,albums[i].artist)) {
+          counts[albums[i].artist] = counts[albums[i].artist]+1;
+        } else {
+          counts[albums[i].artist] = 1;
+        }
+      }
+      // Then loop through counts to get top artist (1st if equal)
+      let maxV = 0;
+      for(let [key, value] of Object.entries(counts)){ 
+        if(value > maxV) {
+          top = key;
+          maxV = value;
+        }
+      }
+    }
+    setArtistCount(Object.keys(counts).length);
+    setTopArtist(top);
+  }
+
+  // Remove an album from the collection
+  async function burnAlbum(albumId, tokenId) {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      let contract = new ethers.Contract(nftaddress, NFT.abi, signer);
+
+      // First, call burn function from contract
+      let transaction = await contract.burnToken(tokenId);
+      await transaction.wait();
+
+      // Then, remove from the collection
+      contract = new ethers.Contract(albumcollectionaddress, Collection.abi, signer);
+      transaction = await contract.removeAlbum(albumId);
+      await transaction.wait();
+
+      alert("Successfully removed album!");
+
+    } catch(error) {
+      alert("Error when trying to remove the album. Please try again");
+      console.log("Error when burning: ", error);
     }
   }
 
@@ -99,7 +150,7 @@ export default function Home(props) {
 
   return (
     <div className="flex flex-row h-full py-10 mx-auto w-[1152px]">
-      <div className="w-1/5 bg-white p-4 rounded shadow-sm">
+      <div className="w-1/5 h-[inherit] bg-white p-4 rounded shadow-sm">
         <div className="flex flex-col h-[180px] justify-center items-center border-b">
           <Image
             src="/profile.jpg"
@@ -113,11 +164,11 @@ export default function Home(props) {
         <div className="py-4 border-b">
           <div className="flex flex-row text-sm font-medium">
             <Image src="/badge.png" alt="badge" width={20} height={20} />
-            <p className="ml-2">Novice Collector</p>
+            <p className="ml-2">{getCollectorLvl(albums.length) + " Collector"}</p>
           </div>
           <div className="flex flex-row justify-between items-center mt-1">
             <div className="flex-auto h-2 bg-gray-200 rounded-lg">
-              <div className="w-[90%] h-2 bg-purple-900 rounded-lg"></div>
+              <div style={{width:`${albums.length%10*10}%`}} className="h-2 bg-purple-900 rounded-lg"></div>
             </div>
             <div className="ml-2 text-sm">{albums.length}</div>
           </div>
@@ -129,12 +180,12 @@ export default function Home(props) {
           </div>
           <div className="flex flex-row justify-between items-center mb-1 text-sm">
             <div className="text-gray-400">No. artists</div>
-            <p className="font-medium">4</p>
+            <p className="font-medium">{artistCount}</p>
           </div>
           <div className="flex flex-row justify-between items-center text-sm">
             <div className="text-gray-400">Top artist</div>
             <p className="max-w-[60%] truncate font-medium">
-              Girls&apos; Generation
+              {topArtist}
             </p>
           </div>
         </div>
@@ -184,7 +235,7 @@ export default function Home(props) {
                   </div>
                   <div className="flex flex-row justify-between items-center p-2">
                     <ShareIcon className="h-4 w-4 text-gray-400 cursor-pointer" />
-                    <XIcon className="h-4 w-4 text-gray-400 cursor-pointer" />
+                    <XIcon onClick={() => burnAlbum(album.albumId, album.tokenId)} className="h-4 w-4 text-gray-400 cursor-pointer" />
                   </div>
                 </div>
               ))
