@@ -54,7 +54,7 @@ When the deployment is complete, the CLI should print out the addresses of the c
 
 You can verify the contracts on Polygonscan by running the following command, replacing the address of both deployed contracts:
 
-````sh
+```sh
 npx hardhat verify --network mumbai <deployed-contract-address>
 ```
 
@@ -62,7 +62,7 @@ Finally, you can now test out the app by running the command:
 
 ```sh
 npm run dev
-````
+```
 
 ### Next Steps
 
